@@ -1,10 +1,13 @@
 
 
 import 'package:farmer_app/core/models/farmer_data.dart';
+import 'package:farmer_app/core/services/db_helper.dart';
 import 'package:flutter/cupertino.dart';
 
 class FarmerDataViewModel extends ChangeNotifier{
-  List<FarmerData> _listOfFarmers = [
+  final dbHelper = DatabaseHelper.instance;
+
+  List<FarmerData> _tempFarmers = [
     FarmerData(
       fullName: "Shivkant Sawarkar",
       gender: "Male",
@@ -46,7 +49,7 @@ class FarmerDataViewModel extends ChangeNotifier{
       ageOfCrop: 100
     ),
   ];
-  List<FarmerData> _tempFarmers = [];
+  List<FarmerData> _listOfFarmers = [];
   List<FarmerData> get getListOfFarmers => _listOfFarmers;
   bool isEditing = false;
   bool get getIsEditing => isEditing;
@@ -56,24 +59,46 @@ class FarmerDataViewModel extends ChangeNotifier{
     notifyListeners();
   }
 
-  void setListOfFarmers(){
-    _tempFarmers = _listOfFarmers;
+  void setListOfFarmers()async{
+    await dbHelper.insertSudoData(_listOfFarmers);
+    var asd = await dbHelper.queryAllRows();
+    asd.map((e) => _listOfFarmers.add(FarmerData.fromJson(e))).toList();
     notifyListeners();
   }
 
-  void addFarmerInList(FarmerData farmer){
-    _listOfFarmers.add(farmer);
-    _tempFarmers = _listOfFarmers;
+  void addFarmerInList(FarmerData farmer)async{
+    try {
+      int returnFarmerId = await dbHelper.insert(farmer);
+      if(returnFarmerId != null){
+        _listOfFarmers.add(farmer);
+      }
+    } catch (e) {
+      print("e");
+    }
     notifyListeners();
   }
 
-  void updateFarmerInList(FarmerData farmer){
-    _listOfFarmers[_listOfFarmers.indexWhere((element) => element.fullName == farmer.fullName)] = farmer;
+  void updateFarmerInList(FarmerData farmer)async{
+    try {
+      int returnFarmerId = await dbHelper.update(farmer);
+      if(returnFarmerId != null){
+          _listOfFarmers[_listOfFarmers.indexWhere((element) => element.fullName == farmer.fullName)] = farmer;
+      }
+    } catch (e) {
+      print("e");
+    }
     notifyListeners();
   }
 
-  void removeFarmer(FarmerData farmer){
-    _listOfFarmers.removeWhere((item) => item.fullName == farmer.fullName);
+  void removeFarmer(int farmerId)async{
+    try {
+      int returnFarmerId = await dbHelper.delete(farmerId);
+      if(returnFarmerId != null){
+        _listOfFarmers.removeWhere((item) => item.id == farmerId);
+      }
+    } catch (e) {
+      print("e");
+    }
     notifyListeners();
   }
   

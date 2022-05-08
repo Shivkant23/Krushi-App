@@ -292,6 +292,7 @@ class _AddFarmerState extends State<AddFarmer> {
             autoValidate = AutovalidateMode.always;
              if (_formKey.currentState!.validate()) {
               FarmerData _farmer = FarmerData(
+                id: widget.farmerData?.id!,
                 fullName: nameController.text,
                 gender: _gender,
                 crop: currentSelectedValue,
