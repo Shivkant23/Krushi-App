@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       body: Center(
         child: Stack(
           children: [
-            const Text('Farmer', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
+            const Text('KRUSHI', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
             Container(
               width: MediaQuery.of(context).size.width * 0.80,
               height: MediaQuery.of(context).size.width * 0.70,
