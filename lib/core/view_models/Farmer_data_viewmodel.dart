@@ -50,6 +50,7 @@ class FarmerDataViewModel extends ChangeNotifier{
     ),
   ];
   List<FarmerData> _listOfFarmers = [];
+  List<FarmerData> _templistOfFarmers = [];
   List<FarmerData> get getListOfFarmers => _listOfFarmers;
   bool isEditing = false;
   bool get getIsEditing => isEditing;
@@ -59,19 +60,23 @@ class FarmerDataViewModel extends ChangeNotifier{
     notifyListeners();
   }
 
-  void setListOfFarmers()async{
-    await dbHelper.insertSudoData(_listOfFarmers);
+  Future<List<FarmerData>> setListOfFarmers()async{
+    await dbHelper.insertSudoData(_tempFarmers);
     var asd = await dbHelper.queryAllRows();
     asd.map((e) => _listOfFarmers.add(FarmerData.fromJson(e))).toList();
+    _templistOfFarmers = _listOfFarmers;
     notifyListeners();
+    return _listOfFarmers;
   }
 
   void addFarmerInList(FarmerData farmer)async{
     try {
       int returnFarmerId = await dbHelper.insert(farmer);
       if(returnFarmerId != null){
+        farmer.id = returnFarmerId;
         _listOfFarmers.add(farmer);
       }
+      _templistOfFarmers = _listOfFarmers;
     } catch (e) {
       print("e");
     }
@@ -84,6 +89,7 @@ class FarmerDataViewModel extends ChangeNotifier{
       if(returnFarmerId != null){
           _listOfFarmers[_listOfFarmers.indexWhere((element) => element.fullName == farmer.fullName)] = farmer;
       }
+      _templistOfFarmers = _listOfFarmers;
     } catch (e) {
       print("e");
     }
@@ -96,6 +102,7 @@ class FarmerDataViewModel extends ChangeNotifier{
       if(returnFarmerId != null){
         _listOfFarmers.removeWhere((item) => item.id == farmerId);
       }
+      _templistOfFarmers = _listOfFarmers;
     } catch (e) {
       print("e");
     }
@@ -105,9 +112,9 @@ class FarmerDataViewModel extends ChangeNotifier{
 
   void farmerNameSearch(String name) {
     if (name.isEmpty) {
-      _listOfFarmers = _tempFarmers;
+      _listOfFarmers = _templistOfFarmers;
     } else {
-      _listOfFarmers = _tempFarmers
+      _listOfFarmers = _templistOfFarmers
           .where((element) =>
               element.fullName.toLowerCase().contains(name.toLowerCase()))
           .toList();

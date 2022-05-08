@@ -16,4 +16,5 @@ class Api{
       throw Exception('Failed to load weather');
     }
   }
+
 }
