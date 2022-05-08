@@ -79,14 +79,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         body: Consumer(
           builder: (context, FarmerDataViewModel farmers, child) {
-            return ListView.builder(
+            return farmers.getListOfFarmers.isEmpty ? ListView.builder(
               itemCount: farmers.getListOfFarmers.length,
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               itemBuilder: (context, index){
                 FarmerData farmer = farmers.getListOfFarmers[index];
                 return FarmerCard(farmer: farmer);
               }
-            );
+            ):const Center(child: Text('Unable to add default data, please add farmers'),);
           }
         ),
         floatingActionButton: FloatingActionButton(
